@@ -1,7 +1,7 @@
 import os
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from routes.PlanRoute import router as plan_router
+from routes.ProductoRoute import router as producto_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,7 +36,7 @@ app.add_middleware(
 
 
 # planes
-app.include_router(plan_router, tags=["Plan"])
+app.include_router(producto_router, tags=["Producto"])
 
 
 
