@@ -4,7 +4,7 @@ venv/
 .xlsx
 
 # Ignorar files
-# static/productos/
+[ADD] clase de respuesta# static/productos/
 static/empresas/
 XML/
 XML2/
