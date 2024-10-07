@@ -14,26 +14,76 @@ import math
 
 
 def create_product(product: Producto, db: Session):
-    new_product = productos.insert().values(
-        nombre=product.nombre,
-        descripcion=product.descripcion,
-        precio=product.precio,
-        stock=product.stock,
-        estado=product.estado
-    )
-    db.execute(new_product)
-    db.commit()
-    return db.execute(productos.select().order_by(productos.c.id.desc())).first()
+    try:
+        # Crear la consulta de inserción para producto
+        new_product = productos.insert().values(
+            nombre=product.nombre,
+            descripcion=product.descripcion,
+            precio=product.precio,
+            stock=product.stock,
+            estado=1  # Puedes establecer el estado a 1 por defecto si es necesario
+        )
+
+        # Ejecutar la consulta de inserción
+        db.execute(new_product)
+        db.commit()
+
+        # Devolver la respuesta de éxito
+        return {
+            "message": "Se registró correctamente el producto",
+            "state": True,
+            "code": 200
+        }
+    except Exception as e:
+        db.rollback()  # Revertir la transacción en caso de error
+        return {
+            "message": "No se registró el producto",
+            "state": False,
+            "code": 400  # Puedes cambiar este código según el tipo de error
+        }
 
 # Función para obtener todos los productos
 def get_products(db: Session):
-    return db.execute(productos.select().where(productos.c.estado == 1)).fetchall()
+    # Ejecuta la consulta y obtiene los productos activos
+    result = db.execute(productos.select().where(productos.c.estado == 1)).fetchall()
+    
+    # Mapeo una lista de productos
+    products = [
+        {
+            "id": row.id,
+            "nombre": row.nombre,
+            "descripcion": row.descripcion,
+            "precio": row.precio,
+            "stock": row.stock,
+            "estado": row.estado,
+            "created_at":row.created_at,
+            "updated_at":row.updated_at
+        }
+        for row in result
+    ]
+    
+    return products
 
 # Función para obtener un producto específico
 def get_product(id: int, db: Session):
-    product = db.execute(productos.select().where(productos.c.id == id)).first()
-    if not product:
+    result = db.execute(productos.select().where(productos.c.id == id)).first()
+    if not result:
+        product=[]
         raise HTTPException(status_code=404, detail="Producto no encontrado")
+    else:
+        product= [
+            {
+                "id": product.id,
+                "nombre": product.nombre,
+                "descripcion": product.descripcion,
+                "precio": product.precio,
+                "stock": product.stock,
+                "estado": product.estado,
+                "created_at":product.created_at,
+                "updated_at":product.updated_at
+            }
+        ]
+
     return product
 
 # Función para actualizar un producto
@@ -45,8 +95,8 @@ def update_product(id: int, product: Producto, db: Session):
         nombre=product.nombre,
         descripcion=product.descripcion,
         precio=product.precio,
-        stock=product.stock,
-        estado=product.estado
+        stock=product.stock
+        # estado=product.estado
     )
     db.execute(update_query)
     db.commit()
