@@ -5,7 +5,8 @@ from models.Producto import productos
 from fastapi.responses import FileResponse
 # from nanoid import generate
 from schemas.Producto import *
-from sqlalchemy import text,Session
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 import math
 
 # from utils.File import get_extension, getImage, remove_file, save_file, update_filename

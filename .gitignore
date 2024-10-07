@@ -25,7 +25,7 @@ data/__pycache__
 data/__pycache__/
 data/__pycache__/*
 # TODO: database folder
-database/
+# database/
 database/__pycache__
 database/__pycache__/
 database/__pycache__/*

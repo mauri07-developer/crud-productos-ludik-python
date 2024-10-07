@@ -1,6 +1,7 @@
-from typing import Annotated, Optional
+from typing import Annotated, Optional,List
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from sqlalchemy.orm import Session
+from schemas.Producto import ProductoResponse,Producto
 from controllers.ProductoController import (
     create_product,
     get_products,
