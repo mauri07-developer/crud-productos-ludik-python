@@ -1,0 +1,94 @@
+======================================================
+               INSTRUCCIONES DE PROYECTO FASTAPI
+======================================================
+
+Requisitos previos:
+-------------------
+- Python 3.7 o superior
+- pip (gestor de paquetes de Python)
+- Uvicorn (servidor ASGI)
+- SQLAlchemy (si se usa para la base de datos)
+- FastAPI
+
+Instalación de Python:
+----------------------
+1. Descarga Python:
+   - Visita el sitio oficial de Python: https://www.python.org/downloads/
+   - Descarga la última versión estable para tu sistema operativo (Windows, macOS o Linux).
+
+2. Instalar Python:
+   - Ejecuta el instalador que descargaste.
+   - Durante la instalación, asegúrate de marcar la opción **"Add Python to PATH"**. Esto configurará automáticamente las variables del sistema para que puedas ejecutar Python desde la línea de comandos.
+
+3. Verificar la instalación:
+   - Abre una terminal (Command Prompt en Windows, Terminal en macOS/Linux).
+   - Ejecuta el siguiente comando:
+     python --version
+   - Si ves la versión de Python, la instalación fue exitosa.
+
+Instalación de pip:
+-------------------
+- `pip` generalmente se instala automáticamente con Python 3.4 y versiones posteriores. Para verificar si está instalado, ejecuta el siguiente comando:
+  pip --version
+- Si `pip` no está instalado, puedes instalarlo siguiendo estos pasos:
+  - **Para Windows:**
+    1. Descarga `get-pip.py` desde https://bootstrap.pypa.io/get-pip.py.
+    2. Abre una terminal de comandos y navega a la carpeta donde descargaste el archivo.
+    3. Ejecuta el siguiente comando:
+       python get-pip.py
+
+  - **Para macOS/Linux:**
+    1. Abre una terminal.
+    2. Ejecuta el siguiente comando:
+       curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    3. Luego, ejecuta:
+       python get-pip.py
+
+Requisitos opcionales:
+----------------------
+- Virtualenv o venv (para crear un entorno virtual)
+- Postgres, MySQL, o SQLite (dependiendo de la base de datos utilizada)
+- Editor de código (como VSCode, PyCharm, etc.)
+
+Instrucciones para ejecutar el proyecto:
+-----------------------------------------
+1. Clonar el repositorio del proyecto:
+   git clone https://github.com/mauri07-developer/crud-productos-ludik-python.git
+
+2. Crear y activar un entorno virtual (opcional pero recomendado):
+   - En sistemas Unix/macOS:
+     python3 -m venv venv
+     source venv/bin/activate
+   - En sistemas Windows:
+     python -m venv venv
+     .\venv\Scripts\activate
+
+3. Instalar las dependencias:
+   Asegúrate de estar en la raíz del proyecto y ejecuta el siguiente comando para instalar las dependencias que están en el archivo requirements.txt:
+   pip install -r requirements.txt
+
+4. Crear la base de datos:
+   - Abre tu herramienta de gestión de bases de datos de preferencia PhpMyAdmin o MysqlWorkbench para crear la base de datos mas facilmente
+   - Crea una nueva base de datos para tu proyecto. Por ejemplo, si usas MySQL, puedes ejecutar:
+     CREATE DATABASE crud-producto-python_ludik;
+   - Asegúrate de tener las credenciales de la base de datos (nombre de usuario, contraseña, etc.) para configurar correctamente la conexión.
+
+5. Iniciar la aplicación FastAPI:
+   Para iniciar el servidor de FastAPI, usa el comando uvicorn:
+   uvicorn main:app --reload
+   - main es el archivo donde está definida tu aplicación FastAPI.
+   - app es la instancia de la aplicación FastAPI.
+   - El parámetro --reload permite la recarga automática del servidor al detectar cambios en el código.
+
+6. Acceder a la documentación interactiva de la API:
+   Una vez que el servidor esté en ejecución, puedes acceder a la documentación interactiva generada automáticamente por FastAPI en las siguientes URLs:
+   - Documentación Swagger: http://127.0.0.1:8000/docs
+   - Documentación Redoc: http://127.0.0.1:8000/redoc
+
+7. Detener el entorno virtual (si se ha activado):
+   - En sistemas Unix/macOS:
+     deactivate
+   - En sistemas Windows:
+     .\venv\Scripts\deactivate
+
+======================================================

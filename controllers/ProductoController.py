@@ -3,19 +3,16 @@ from typing import Optional
 from fastapi import File, Request, Response, UploadFile,HTTPException
 from models.Producto import productos
 from fastapi.responses import FileResponse
-# from nanoid import generate
 from schemas.Producto import *
-from sqlalchemy import text
+from sqlalchemy import text,and_
 from sqlalchemy.orm import Session
 import math
 
-# from utils.File import get_extension, getImage, remove_file, save_file, update_filename
-# from utils.Image import get_avif_support, get_webp_support
 
-
+#Funcion para crear productos
 def create_product(product: Producto, db: Session):
     try:
-        # Crear la consulta de inserción para producto
+        # Creo la consulta de inserción para producto
         new_product = productos.insert().values(
             nombre=product.nombre,
             descripcion=product.descripcion,
@@ -23,11 +20,11 @@ def create_product(product: Producto, db: Session):
             stock=product.stock
         )
 
-        # Ejecutar la consulta de inserción
+        # Ejecuto la consulta de inserción
         db.execute(new_product)
         db.commit()
 
-        # Devolver la respuesta de éxito
+        # Devuelvo la respuesta de éxito
         return {
             "message": "Se registró correctamente el producto",
             "state": True,
@@ -36,14 +33,14 @@ def create_product(product: Producto, db: Session):
     except Exception as e:
         db.rollback()  # Revertir la transacción en caso de error
         return {
-            "message": "No se registró el producto",
+            "message": str(e),
             "state": False,
             "code": 400  # Puedes cambiar este código según el tipo de error
         }
 
 # Función para obtener todos los productos
 def get_products(db: Session):
-    # Ejecuta la consulta y obtiene los productos activos
+    # Ejecuto la consulta y obtiene los productos activos
     result = db.execute(productos.select().where(productos.c.estado == 1)).fetchall()
     
     # Mapeo una lista de productos
@@ -65,12 +62,12 @@ def get_products(db: Session):
 
 # Función para obtener un producto específico
 def get_product(id: int, db: Session):
-    result = db.execute(productos.select().where(productos.c.id == id)).first()
+    result = db.execute(productos.select().where(and_(productos.c.id == id,productos.c.estado==1))).first()
 
     if not result:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        raise HTTPException(status_code=404, detail="Producto no encontrado o se encuentra inactivo")
     
-    # Construcción correcta del diccionario
+    # Construyo el objeto correspondiente al producto
     product = {
         "id": result.id,
         "nombre": result.nombre,
@@ -86,25 +83,71 @@ def get_product(id: int, db: Session):
 
 # Función para actualizar un producto
 def update_product(id: int, product: Producto, db: Session):
-    existing_product = db.execute(productos.select().where(productos.c.id == id)).first()
-    if not existing_product:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
-    update_query = productos.update().where(productos.c.id == id).values(
-        nombre=product.nombre,
-        descripcion=product.descripcion,
-        precio=product.precio,
-        stock=product.stock
-        # estado=product.estado
-    )
-    db.execute(update_query)
-    db.commit()
-    return db.execute(productos.select().where(productos.c.id == id)).first()
+    try:
+        # Verifico si el producto existe
+        existing_product = db.execute(productos.select().where(and_(productos.c.id == id,productos.c.estado==1))).first()
+
+        if not existing_product:
+            return {
+                "message": "Producto no encontrado o se encuentra inactivo",
+                "state": False,
+                "code": 404
+            }
+
+        # Creo la consulta de actualizacion
+        update_query = productos.update().where(productos.c.id == id).values(
+            nombre=product.nombre,
+            descripcion=product.descripcion,
+            precio=product.precio,
+            stock=product.stock
+        )
+
+        # Ejecuto la consulta de actualización
+        db.execute(update_query)
+        db.commit()
+
+        # Obtengo el producto actualizado para devolverlo
+        updated_product = db.execute(productos.select().where(productos.c.id == id)).first()
+
+        # Mapeo la tupla a un diccionario para devolver
+        producto_data = {
+            "id": updated_product.id,
+            "nombre": updated_product.nombre,
+            "descripcion": updated_product.descripcion,
+            "precio": updated_product.precio,
+            "stock": updated_product.stock,
+            "estado": updated_product.estado
+        }
+
+        # Devolver la respuesta de éxito
+        return {
+            "message": "Producto actualizado con éxito",
+            "state": True,
+            "code": 200,
+            "producto": producto_data  
+        }
+
+    except Exception as e:
+        db.rollback()  # Revertir la transacción en caso de error
+        return {
+            "message": "No se pudo actualizar el producto",
+            "state": False,
+            "code": 500  
+        }
 
 # Función para eliminar (inactivar) un producto
 def delete_product(id: int, db: Session):
+
+    # Buscar el producto por su id
     product = db.execute(productos.select().where(productos.c.id == id)).first()
+
+    # Si no se encuentra el producto o esta inactivo, devolver un mensaje personalizado
     if not product:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        return {"message": "Producto no encontrado o se encuentra inactivo", "code": 404, "estado": False}
+
+    # Actualizar el estado del producto a 0 (eliminado)
     db.execute(productos.update().where(productos.c.id == id).values(estado=0))
     db.commit()
-    return {"message": "Producto eliminado con éxito"}
+
+    # Retornar el mensaje de éxito
+    return {"message": "Producto eliminado con éxito", "code": 200, "estado": True}
