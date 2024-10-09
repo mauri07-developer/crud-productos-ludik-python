@@ -20,8 +20,7 @@ def create_product(product: Producto, db: Session):
             nombre=product.nombre,
             descripcion=product.descripcion,
             precio=product.precio,
-            stock=product.stock,
-            estado=1  # Puedes establecer el estado a 1 por defecto si es necesario
+            stock=product.stock
         )
 
         # Ejecutar la consulta de inserción
@@ -67,23 +66,22 @@ def get_products(db: Session):
 # Función para obtener un producto específico
 def get_product(id: int, db: Session):
     result = db.execute(productos.select().where(productos.c.id == id)).first()
-    if not result:
-        product=[]
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
-    else:
-        product= [
-            {
-                "id": product.id,
-                "nombre": product.nombre,
-                "descripcion": product.descripcion,
-                "precio": product.precio,
-                "stock": product.stock,
-                "estado": product.estado,
-                "created_at":product.created_at,
-                "updated_at":product.updated_at
-            }
-        ]
 
+    if not result:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    # Construcción correcta del diccionario
+    product = {
+        "id": result.id,
+        "nombre": result.nombre,
+        "descripcion": result.descripcion,
+        "precio": result.precio,
+        "stock": result.stock,
+        "estado": result.estado,
+        "created_at": result.created_at,
+        "updated_at": result.updated_at
+    }
+    
     return product
 
 # Función para actualizar un producto

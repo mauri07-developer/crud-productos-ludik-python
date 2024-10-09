@@ -39,12 +39,12 @@ def read(id: int, db: Session = Depends(get_db)):
     return get_product(id, db)
 
 # Ruta para actualizar un producto
-@router.put("/product/{id}", response_model=ProductoResponse)
+@router.put("/product/update/{id}", response_model=ProductoResponse)
 def update(id: int, product: Producto, db: Session = Depends(get_db)):
     return update_product(id, product, db)
 
 # Ruta para eliminar (inactivar) un producto
-@router.delete("/product/delete/idProduct/{id}")
+@router.delete("/product/delete/{id}")
 def delete(id: int, db: Session = Depends(get_db)):
     return delete_product(id, db)
 
